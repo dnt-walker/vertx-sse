@@ -14,6 +14,9 @@ public interface SSEHandler extends Handler<RoutingContext> {
 	}
 
 	@Fluent
+	public SSEHandler enableCors(boolean enableCors);
+
+	@Fluent
 	public SSEHandler connectHandler(Handler<SSEConnection> connection);
 
 	@Fluent

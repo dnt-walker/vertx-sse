@@ -6,12 +6,15 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.sse.SSEConnection;
 import io.vertx.ext.web.handler.sse.SSEHeaders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -178,5 +181,13 @@ public class SSEConnectionImpl implements SSEConnection {
 		if (eventName == null && id == null) {
 			this.data(data);
 		}
+	}
+
+	public Cookie getCookie(String name) {
+		return context.getCookie(name);
+	}
+
+	public Optional<Session> getSession() {
+		return Optional.ofNullable(context.session());
 	}
 }

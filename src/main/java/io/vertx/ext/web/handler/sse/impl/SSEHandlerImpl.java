@@ -11,6 +11,7 @@ import io.vertx.ext.web.handler.sse.SSEHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SSEHandlerImpl implements SSEHandler {
 
@@ -20,6 +21,8 @@ public class SSEHandlerImpl implements SSEHandler {
 	private final List<Handler<SSEConnection>> connectHandlers;
 	private final List<Handler<SSEConnection>> closeHandlers;
 
+	private boolean enableCors;
+
 	public SSEHandlerImpl() {
 		connectHandlers = new ArrayList<>();
 		closeHandlers = new ArrayList<>();
@@ -27,8 +30,10 @@ public class SSEHandlerImpl implements SSEHandler {
 
 	@Override
 	public void handle(RoutingContext context) {
+
 		HttpServerRequest request = context.request();
 		HttpServerResponse response = context.response();
+
 		response.setChunked(true);
 		SSEConnection connection = SSEConnection.create(context);
 		String accept = request.getHeader("Accept");
@@ -43,12 +48,27 @@ public class SSEHandlerImpl implements SSEHandler {
 		response.headers().add("Content-Type", "text/event-stream");
 		response.headers().add("Cache-Control", "no-cache");
 		response.headers().add("Connection", "keep-alive");
+
+		// set CROS Allow Origin.
+		if (enableCors) {
+			Optional.ofNullable(request.getHeader("Origin")).ifPresent(origin -> {
+				response.headers().add("Access-Control-Allow-Credentials", "true");
+				response.headers().add("Access-Control-Allow-Origin", origin);
+			});
+		}
+
 		connectHandlers.forEach(handler -> handler.handle(connection));
 		if (!connection.rejected()) {
 			response.setStatusCode(200);
 			response.setChunked(true);
 			response.write(EMPTY_BUFFER);
 		}
+	}
+
+	@Override
+	public SSEHandler enableCors(boolean enableCors) {
+		this.enableCors = enableCors;
+		return this;
 	}
 
 	@Override

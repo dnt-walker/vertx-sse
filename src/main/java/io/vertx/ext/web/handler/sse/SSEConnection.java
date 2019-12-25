@@ -4,10 +4,13 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.sse.impl.SSEConnectionImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 @VertxGen
 public interface SSEConnection {
@@ -65,4 +68,9 @@ public interface SSEConnection {
 	@GenIgnore
 	HttpServerRequest request();
 
+	@GenIgnore
+	Cookie getCookie(String name);
+
+	@GenIgnore
+	Optional<Session> getSession();
 }
